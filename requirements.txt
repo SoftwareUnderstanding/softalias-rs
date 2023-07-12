@@ -1,5 +1,5 @@
 streamlit
-annotated_text
+st-annotated-text
 nltk
 spacy
 sparqlwrapper
