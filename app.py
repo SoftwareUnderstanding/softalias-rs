@@ -1,5 +1,4 @@
 import streamlit as st
-from huggingface_hub import InferenceApi
 from annotated_text import annotated_text
 import nltk
 import spacy
