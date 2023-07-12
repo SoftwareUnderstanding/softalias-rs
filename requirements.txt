@@ -1,0 +1,5 @@
+streamlit
+annotated_text
+nltk
+spacy
+sparqlwrapper
