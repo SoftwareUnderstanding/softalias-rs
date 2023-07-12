@@ -68,7 +68,7 @@ def getRelevance(entity):
                 <https://w3id.org/softalias/number_of_repetitions> ?r .
             filter(?a != ?alias)
                 
-            }}
+            }} ORDER BY DESC(?r)
             """
     
     sparqlwd.setQuery(query)
@@ -146,15 +146,18 @@ def annotate_text(text, predictions):
     tokens = [token.text+" " for token in docx]
 
     res = []
+    annotated_tokens=[]
 
     for token in docx:
         entity = getEntityToken(token, predictions)
         if entity != "":
             res.append((token.text+" ",entity))
+            annotated_tokens.append(token.text)
         else:
             res.append(token.text+" ")
 
     annotated_text(res)
+    return annotated_tokens
 
 def getMaxRelation(relations):
     name = "none"
@@ -272,11 +275,19 @@ def get_example():
 def main():
     st.title("DEMO: Aliases")
 
-    if st.button("Example 1"):
-        st.session_state.sentence_text = "I use spss to analyze my results. This software is equivalent to SpSS."
+    button_container = st.container()
 
-    if st.button("Example 2"):
-        st.session_state.sentence_text = "The use of Microsoft Excel is not indicated to analyze data. It is better to use some python package such as pandas."
+    col_example_1, col_example_2 = button_container.columns(2)
+
+    with col_example_1:
+
+        if st.button("Example 1"):
+            st.session_state.sentence_text = "I use spss to analyze my results. This software is equivalent to SpSS."
+
+    with col_example_2:
+
+        if st.button("Example 2"):
+            st.session_state.sentence_text = "The use of Microsoft Excel is not indicated to analyze data. It is better to use some python package such as pandas."
 
     
     st.subheader("Add the text to process")
@@ -286,9 +297,9 @@ def main():
         nlp_results = extract_software(text)
         print(nlp_results["mentions"])
         
-        annotate_text(text,nlp_results)
+        entity_list = annotate_text(text,nlp_results)
 
-        entity_list = [x["software-name"]["rawForm"] for x in nlp_results["mentions"]]
+        #entity_list = [x["software-name"]["rawForm"] for x in nlp_results["mentions"]]
         entity_list = [x for x in entity_list if entity_list.count(x) == 1]
       
         
