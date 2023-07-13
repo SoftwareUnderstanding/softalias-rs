@@ -300,8 +300,8 @@ def main():
         entity_list = annotate_text(text,nlp_results)
 
         #entity_list = [x["software-name"]["rawForm"] for x in nlp_results["mentions"]]
-        entity_list = [x for x in entity_list if entity_list.count(x) == 1]
-      
+        #entity_list = [x for x in entity_list if entity_list.count(x) == 1]
+        entity_list = list(set(entity_list))
         
         for nlp_result in entity_list:
             st.subheader(nlp_result)
