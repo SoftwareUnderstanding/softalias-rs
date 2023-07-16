@@ -2,10 +2,13 @@ import streamlit as st
 from annotated_text import annotated_text
 import nltk
 import spacy
+from spacy.tokenizer import Tokenizer
+from spacy.util import compile_infix_regex
 import requests
 import json
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
+
 
 
 def extract_software(message):
@@ -19,6 +22,33 @@ def extract_software(message):
     print(results.text)
 
     return results.json()
+
+def getWikidata(entity):
+    sparqlwd = SPARQLWrapper("https://query.wikidata.org/sparql", agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
+
+    sparqlwd.setReturnFormat(JSON)
+
+    query=f"""
+            select distinct ?software ?url ?repo where {{
+            ?software wdt:P31/wdt:P279* wd:Q7397;
+                    rdfs:label "{entity}"@en.
+            
+            OPTIONAL {{?software wdt:P1324 ?repo}}.
+            OPTIONAL {{?software wdt:P856 ?url}}
+  
+  
+            }}
+            """
+    
+    print("Q:"+query)
+    sparqlwd.setQuery(query)
+   
+    results = sparqlwd.query().convert()
+    print("***********************")
+    print(results)
+    print("***********************")
+
+    return results
 
 def getURLs(entity):
     sparqlwd = SPARQLWrapper("https://softalias.linkeddata.es/softalias/", agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
@@ -34,8 +64,8 @@ def getURLs(entity):
             ?alias schema:name '{entity}' .
             ?group schema:url ?url .
             ?group <https://w3id.org/softalias/alias>?al . 
-            ?al schema:name ?a;
-                <https://w3id.org/softalias/number_of_repetitions> ?r .
+            ?al schema:name ?a.
+            optional{{?al <https://w3id.org/softalias/number_of_repetitions> ?r .}}
             filter(?a != ?alias)
                 
             }} LIMIT 100
@@ -63,18 +93,18 @@ def getRelevance(entity):
             ?group <https://w3id.org/softalias/alias> ?alias .
             ?alias schema:name '{entity}' .
             ?group schema:url ?url .
-            ?group <https://w3id.org/softalias/alias>?al . 
-            ?al schema:name ?a;
-                <https://w3id.org/softalias/number_of_repetitions> ?r .
+            ?group <https://w3id.org/softalias/alias> ?al .
+            ?al schema:name ?a.
+            optional{{?al <https://w3id.org/softalias/number_of_repetitions> ?r .}}
             filter(?a != ?alias)
-                
-            }} ORDER BY DESC(?r)
+            }} order by desc(?r)
             """
     
     sparqlwd.setQuery(query)
    
     results = sparqlwd.query().convert()
     print("***********************")
+    print("Entity:"+str(entity))
     print(results)
     print("***********************")
 
@@ -125,7 +155,8 @@ def print_chart(entity):
     relevance_list = getRelevance(entity)
 
     relevance_names = [relevance["a"]["value"] for relevance in relevance_list["results"]["bindings"]]
-    relevance_values = [int(relevance["r"]["value"]) for relevance in relevance_list["results"]["bindings"]]
+    #relevance_values = [int(relevance["r"]["value"]) for relevance in relevance_list["results"]["bindings"]]
+    relevance_values = [relevance["r"]["value"] if "r" in relevance else "unkown" for relevance in relevance_list["results"]["bindings"]]
 
     print("----------------------")
     print(relevance_names)
@@ -143,7 +174,9 @@ def annotate_text(text, predictions):
     nlp = spacy.load('en_core_web_sm')
     docx = nlp(text)
 
+
     tokens = [token.text+" " for token in docx]
+    print("T:"+str(tokens))
 
     res = []
     annotated_tokens=[]
@@ -207,8 +240,27 @@ def print_table(table):
         },
         hide_index=True
     )
+
+def remove_substrings(lista):
+    lista_filtrada = []
+
+    for elemento in lista:
+        es_subcadena = False
+
+        for otro_elemento in lista:
+            if elemento != otro_elemento and elemento in otro_elemento:
+                es_subcadena = True
+                break
+
+        if not es_subcadena:
+            lista_filtrada.append(elemento)
+
+    return lista_filtrada
     
 def print_tables(entity):
+
+    st.markdown("**Information from KG**")
+
     col_aliases, col_url = st.columns(2)
 
     with col_aliases:
@@ -216,15 +268,16 @@ def print_tables(entity):
 
         
 
-        df = pd.DataFrame({
+        df_aliases = pd.DataFrame({
             "alias": [alias["a"]["value"] for alias in aliases_list["results"]["bindings"]],
-            "relevance": [alias["r"]["value"] for alias in aliases_list["results"]["bindings"]]
+            "relevance": [relevance["r"]["value"] if "r" in relevance else "unknown" for relevance in aliases_list["results"]["bindings"]]
+            #"relevance": [alias["r"]["value"] for alias in aliases_list["results"]["bindings"]]
         })
     
-        if df.size > 0:
+        if df_aliases.size > 0:
         
             st.data_editor(
-                df,
+                df_aliases,
                 key = "key-alias-"+entity, 
                 column_config={
                     "alias" : st.column_config.Column(
@@ -233,8 +286,8 @@ def print_tables(entity):
                         width="medium"
                     ),
                     "relevance" : st.column_config.Column(
-                        "Relevance",
-                        help="Relevance of the aliases detected",
+                        "# mentions",
+                        help="number of mentions",
                         width="medium"
                     ),
                 },
@@ -246,16 +299,19 @@ def print_tables(entity):
     with col_url:
         url_list = getURLs(entity)
 
+        url_list = [entity["url"]["value"] for entity in url_list["results"]["bindings"]]
+
+        url_list = remove_substrings(url_list)
         
 
-        df = pd.DataFrame({
-            "urls": [entity["url"]["value"] for entity in url_list["results"]["bindings"]],
+        df_urls = pd.DataFrame({
+            "urls": url_list,
         })
         
-        if df.size > 0:
+        if df_urls.size > 0:
             
             st.data_editor(
-                df,
+                df_urls,
                 key = "key-url-"+entity, 
                 column_config={
                     "urls" : st.column_config.LinkColumn(
@@ -282,12 +338,12 @@ def main():
     with col_example_1:
 
         if st.button("Example 1"):
-            st.session_state.sentence_text = "I use spss to analyze my results. This software is equivalent to SpSS."
+            st.session_state.sentence_text = "Although interactive Web-based and stand-alone methods exist for computing the Sobel test, SPSS and SAS programs that automatically run the required regression analyses and computations increase the accessibility of mediation modeling to nursing researchers."
 
     with col_example_2:
 
         if st.button("Example 2"):
-            st.session_state.sentence_text = "The use of Microsoft Excel is not indicated to analyze data. It is better to use some python package such as pandas."
+            st.session_state.sentence_text = "We use Widoco, a Wizard for documenting ontologies for processing our ontos. For other things, we use KGTK, the Knowledge Graph Toolkit."
 
     
     st.subheader("Add the text to process")
@@ -310,7 +366,6 @@ def main():
         #print_chart("spss")
 
         st.success("Done")
-
 
 if __name__ == '__main__':
     main()
