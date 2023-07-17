@@ -373,7 +373,10 @@ def main():
 
     text_container = st.container()
 
-    text_container.markdown("This demo uses Softalias-KG, a Knowledge Graph of software aliases extracted from [the literature](http://dx.doi.org/10.5061/DRYAD.6WWPZGN2C) and [Wikidata](https://dl.acm.org/doi/fullHtml/10.1145/2629489) to reconcile tool mentions found in text. Enter your own text in the box below (or click on the examples below to see sample text snippets) and then click on \"Analyze\".")
+    text_container.markdown("This demo combines [SoftCite](http://dx.doi.org/10.1145/3459637.3481936), a named entity recognition model for software mentions, with  Softalias-KG, a Knowledge Graph of software aliases extracted from the [biomedical literature](http://dx.doi.org/10.5061/DRYAD.6WWPZGN2C) and [Wikidata](https://dl.acm.org/doi/fullHtml/10.1145/2629489) to reconcile tool mentions found in text. "+
+"To try the demo, please enter your own text in the box below (or click on the examples below to see sample text snippets) and then click on \"Analyze\". Candidate software mentions detected by Softcite (v0.7.1) will be highlighted in yellow, and additional aliases and tool information from the KG will be shown in tables below.")
+
+    #text_container.markdown("This demo uses Softalias-KG, a Knowledge Graph of software aliases extracted from [the literature](http://dx.doi.org/10.5061/DRYAD.6WWPZGN2C) and [Wikidata](https://dl.acm.org/doi/fullHtml/10.1145/2629489) to reconcile tool mentions found in text. Enter your own text in the box below (or click on the examples below to see sample text snippets) and then click on \"Analyze\".")
 
     button_container = st.container()
 
