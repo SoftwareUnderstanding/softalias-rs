@@ -2,8 +2,9 @@ import streamlit as st
 from annotated_text import annotated_text
 import nltk
 import spacy
+from spacy.matcher import Matcher
 from spacy.tokenizer import Tokenizer
-from spacy.util import compile_infix_regex
+from spacy.util import compile_prefix_regex, compile_suffix_regex, compile_infix_regex
 import requests
 import json
 import pandas as pd
@@ -170,10 +171,29 @@ def print_chart(entity):
    
     st.bar_chart(source.set_index("Aliases"))
 
+def a_text(text, predictions):
+    annotated_results = []
+    res = [token["software-name"]["rawForm"] for token in predictions["mentions"]]
+    print("TRES:"+str(res))
+    last_end = 0
+    for token in predictions["mentions"]:
+        ent_text = token["software-name"]["rawForm"]
+        ent_label = "software"
+        start = token["software-name"]["offsetStart"]
+        end = token["software-name"]["offsetEnd"]
+        if start > last_end:
+            annotated_results.append(text[last_end:start])
+        annotated_results.append((ent_text, ent_label))
+        last_end = end
+    annotated_results.append(text[last_end:])
+    annotated_text(*annotated_results)
+
+    return res
+
 def annotate_text(text, predictions):
     nlp = spacy.load('en_core_web_sm')
-    docx = nlp(text)
 
+    docx = nlp(text)
 
     tokens = [token.text+" " for token in docx]
     print("T:"+str(tokens))
@@ -329,41 +349,41 @@ def get_example():
     st.session_state.sentence_text = "Ejemplo1"
 
 def main():
-    st.title("DEMO: Aliases")
+    st.set_page_config(page_title='softalias-demo')
+
+    st.title("Softalias reconciliation demo")
+
+    text_container = st.container()
+
+    text_container.markdown("This demo uses Softalias-KG, a Knowledge Graph of software aliases extracted from [the literature](http://dx.doi.org/10.5061/DRYAD.6WWPZGN2C) and [Wikidata](https://dl.acm.org/doi/fullHtml/10.1145/2629489) to reconcile tool mentions found in text. Enter your own text in the box below (or click on the examples below to see sample text snippets) and then click on \"Analyze\".")
 
     button_container = st.container()
 
-    col_example_1, col_example_2 = button_container.columns(2)
+    col1,col2,col3 = button_container.columns(3) 
 
-    with col_example_1:
-
-        if st.button("Example 1"):
+    if col1.button("Example 1"):
             st.session_state.sentence_text = "Although interactive Web-based and stand-alone methods exist for computing the Sobel test, SPSS and SAS programs that automatically run the required regression analyses and computations increase the accessibility of mediation modeling to nursing researchers."
-
-    with col_example_2:
-
-        if st.button("Example 2"):
-            st.session_state.sentence_text = "We use Widoco, a Wizard for documenting ontologies for processing our ontos. For other things, we use KGTK, the Knowledge Graph Toolkit."
-
+    if col2.button("Example 2"):
+            st.session_state.sentence_text = "In Python, Sklearn is the most usable and robust machine learning package. It uses a Python consistency interface to give a set of fast tools for machine learning and statistical modelling, such as classification, regression, clustering, and dimensionality reduction. NumPy, SciPy, and Matplotlib are the foundations of this package, which is mostly written in Python."
+    if col3.button("Example 3"):
+            st.session_state.sentence_text = "KGTK is a Python library for easy manipulation with knowledge graphs. It provides a flexible framework that allows chaining of common graph operations, such as: extraction of subgraphs, filtering, computation of graph metrics, validation, cleaning, generating embeddings, and so on. Its principal format is TSV, though we do support a number of other inputs."
     
-    st.subheader("Add the text to process")
+    button_container.markdown('</div>', unsafe_allow_html=True)
+    
     text = st.text_area("Enter your text","Type here", key="sentence_text")
 
     if st.button("Analyze"):
         nlp_results = extract_software(text)
         print(nlp_results["mentions"])
         
-        entity_list = annotate_text(text,nlp_results)
+        entity_list = a_text(text,nlp_results)
 
-        #entity_list = [x["software-name"]["rawForm"] for x in nlp_results["mentions"]]
-        #entity_list = [x for x in entity_list if entity_list.count(x) == 1]
         entity_list = list(set(entity_list))
         
         for nlp_result in entity_list:
             st.subheader(nlp_result)
             print_tables(nlp_result)
-        #print_table(nlp_result["mentions"])
-        #print_chart("spss")
+
 
         st.success("Done")
 
