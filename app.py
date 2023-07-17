@@ -276,6 +276,18 @@ def remove_substrings(lista):
             lista_filtrada.append(elemento)
 
     return lista_filtrada
+
+def remove_duplicates(list_alias):
+    alias_name=[]
+    res={'head':{'vars':['a','r']}, 'results':{'bindings':[]}}
+    for alias_element in list_alias["results"]["bindings"]:
+        print(alias_element)
+        print(alias_name)
+        if alias_element["a"]["value"] not in alias_name:
+            alias_name.append(alias_element["a"]["value"])
+            res["results"]["bindings"].append(alias_element)
+        print(alias_name)
+    return res
     
 def print_tables(entity):
 
@@ -286,11 +298,17 @@ def print_tables(entity):
     with col_aliases:
         aliases_list = getRelevance(entity)
 
-        
+        print("Duplicates")
+        print(aliases_list)
+
+        aliases_list = remove_duplicates (aliases_list)
+        print(aliases_list)
+
+        unique_aliases = [relevance["r"]["value"] if "r" in relevance  else "unknown" for relevance in aliases_list["results"]["bindings"]]
 
         df_aliases = pd.DataFrame({
             "alias": [alias["a"]["value"] for alias in aliases_list["results"]["bindings"]],
-            "relevance": [relevance["r"]["value"] if "r" in relevance else "unknown" for relevance in aliases_list["results"]["bindings"]]
+            "relevance": unique_aliases
             #"relevance": [alias["r"]["value"] for alias in aliases_list["results"]["bindings"]]
         })
     
