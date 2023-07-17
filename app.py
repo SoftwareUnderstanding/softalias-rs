@@ -399,7 +399,9 @@ def main():
         
         entity_list = a_text(text,nlp_results)
 
-        entity_list = list(set(entity_list))
+        print ("E:"+str(entity_list))
+        entity_list = sorted(list(set(entity_list)))
+        print ("E:"+str(entity_list))
         
         for nlp_result in entity_list:
             st.subheader(nlp_result)
