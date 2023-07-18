@@ -367,6 +367,8 @@ def get_example():
     st.session_state.sentence_text = "Ejemplo1"
 
 def main():
+
+    print ("******************INIT********************************************")
     st.set_page_config(page_title='softalias-demo')
 
     st.title("Softalias reconciliation demo")
@@ -374,13 +376,11 @@ def main():
     text_container = st.container()
 
     text_container.markdown("This demo combines [SoftCite](http://dx.doi.org/10.1145/3459637.3481936), a named entity recognition model for software mentions, with  Softalias-KG, a Knowledge Graph of software aliases extracted from the [biomedical literature](http://dx.doi.org/10.5061/DRYAD.6WWPZGN2C) and [Wikidata](https://dl.acm.org/doi/fullHtml/10.1145/2629489) to reconcile tool mentions found in text. "+
-"To try the demo, please enter your own text in the box below (or click on the examples below to see sample text snippets) and then click on \"Analyze\". Candidate software mentions detected by Softcite (v0.7.1) will be highlighted in yellow, and additional aliases and tool information from the KG will be shown in tables below.")
-
-    #text_container.markdown("This demo uses Softalias-KG, a Knowledge Graph of software aliases extracted from [the literature](http://dx.doi.org/10.5061/DRYAD.6WWPZGN2C) and [Wikidata](https://dl.acm.org/doi/fullHtml/10.1145/2629489) to reconcile tool mentions found in text. Enter your own text in the box below (or click on the examples below to see sample text snippets) and then click on \"Analyze\".")
+"To try the demo, please enter your own text in the box below (or click on the examples below to see sample text snippets) and then click on \"Analyze\". Candidate software mentions detected by [Softcite (v0.7.1)](https://github.com/softcite/software-mentions) will be highlighted in yellow, and additional aliases and tool information from the KG will be shown in tables below.")
 
     button_container = st.container()
 
-    col1,col2,col3 = button_container.columns(3) 
+    col1,col2,col3,col4 = button_container.columns(4) 
 
     if col1.button("Example 1"):
             st.session_state.sentence_text = "Although interactive Web-based and stand-alone methods exist for computing the Sobel test, SPSS and SAS programs that automatically run the required regression analyses and computations increase the accessibility of mediation modeling to nursing researchers."
@@ -388,20 +388,22 @@ def main():
             st.session_state.sentence_text = "In Python, Sklearn is the most usable and robust machine learning package. It uses a Python consistency interface to give a set of fast tools for machine learning and statistical modelling, such as classification, regression, clustering, and dimensionality reduction. NumPy, SciPy, and Matplotlib are the foundations of this package, which is mostly written in Python."
     if col3.button("Example 3"):
             st.session_state.sentence_text = "KGTK is a Python library for easy manipulation with knowledge graphs. It provides a flexible framework that allows chaining of common graph operations, such as: extraction of subgraphs, filtering, computation of graph metrics, validation, cleaning, generating embeddings, and so on. Its principal format is TSV, though we do support a number of other inputs."
-    
+    if col4.button("Example 4"):
+            st.session_state.sentence_text = "This is an example about non-software entities." \
+                "Barack Obama was the president of the United States from 2009 to 2017. A member of the Democratic Party, Obama was the first African-American president of the United States. He previously served as a U.S. senator from Illinois from 2005 to 2008 and as an Illinois state senator from 1997 to 2004, and previously worked as a civil rights lawyer before entering politics."
+
     button_container.markdown('</div>', unsafe_allow_html=True)
     
-    text = st.text_area("Enter your text","Type here", key="sentence_text")
+    text = st.text_area("Enter your text","Type here (longer sentences are recommended so the model can pick up the right context)", key="sentence_text")
 
     if st.button("Analyze"):
         nlp_results = extract_software(text)
-        print(nlp_results["mentions"])
+        print ("Entities Original:"+str(nlp_results))
         
         entity_list = a_text(text,nlp_results)
 
-        print ("E:"+str(entity_list))
         entity_list = sorted(list(set(entity_list)))
-        print ("E:"+str(entity_list))
+        print ("Entities:"+str(entity_list))
         
         for nlp_result in entity_list:
             st.subheader(nlp_result)
