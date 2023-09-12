@@ -1,8 +1,10 @@
 # softalias-rs
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8338240.svg)](https://doi.org/10.5281/zenodo.8338240)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 Softalias-rs is a service that uses [Softalias-KG](https://github.com/SoftwareUnderstanding/softalias-kg) as a reconciliation service for similar tool mentions, which we have integrated with the Named Entity Recognition (NER) model [Softcite](http://dx.doi.org/10.1145/3459637.3481936)  trained in the biomedical domain to extract software mentions. 
 
-**Demo:** See a [demo] (https://softalias-rs.linkeddata.es/).
+**Demo:** See a [demo] (https://w3id.org/softalias/demo).
 
 **Authors:** Daniel Garijo and Esteban Gonzalez
 
