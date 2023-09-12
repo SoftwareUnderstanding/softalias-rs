@@ -63,7 +63,7 @@ docker run -d softalias-rs
 ```
 ## Contribute
 
-If you want to contribute with a pull request, please do so by submitting it to the dev branch.
+Pull requests are welcome in the main branch.
 
 
 
