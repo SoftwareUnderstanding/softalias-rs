@@ -412,6 +412,18 @@ def main():
 
         st.success("Done")
 
+    st.markdown("---")
+    col_about, col_figures = st.columns([2,1])
+    col_about.markdown("Daniel Garijo,Hector Lopez and Esteban Gonzalez")
+    col_about.markdown("Version: 0.0.1")
+    col_about.markdown("Last revision: September, 2023")
+    col_about.markdown("Github: <https://github.com/SoftwareUnderstanding/softalias-rs>")
+
+    logo_oeg, logo_upm = col_figures.columns(2)
+    
+    logo_oeg.image("images/logo-oeg.gif", width=100)
+    logo_upm.image("images/upmlogo.png", width=100)
+    #col_figures.markdown("![Logo upm](images/logo-oeg.gif)")
 if __name__ == '__main__':
     main()
 
