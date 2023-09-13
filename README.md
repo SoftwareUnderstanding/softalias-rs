@@ -4,9 +4,9 @@
 
 Softalias-rs is a service that uses [Softalias-KG](https://github.com/SoftwareUnderstanding/softalias-kg) as a reconciliation service for similar tool mentions, which we have integrated with the Named Entity Recognition (NER) model [Softcite](http://dx.doi.org/10.1145/3459637.3481936)  trained in the biomedical domain to extract software mentions. 
 
-**Demo:** See a [demo] (https://w3id.org/softalias/demo).
+**Demo:** Avaliable [here](https://w3id.org/softalias/demo).
 
-**Authors:** Daniel Garijo and Esteban Gonzalez
+**Authors:** Esteban Gonzalez and Daniel Garijo
 
 ## Requirements:
 Softalias-rs has been tested in Unix operating systems.
@@ -16,7 +16,7 @@ Softalias-rs has been tested in Unix operating systems.
 - Streamlit 1.24
 - Softcite service 0.7.1.
 
-Make sure you have deployed the Softalias-KG in a SPARQL endpoint.
+Make sure you have deployed the Softalias-KG in a SPARQL endpoint (our demo service uses https://softalias.linkeddata.es/sparql)
 
 To install streamlit, follow these [instructions](https://docs.streamlit.io/library/get-started/installation)
 
@@ -63,7 +63,7 @@ docker run -d softalias-rs
 ```
 ## Contribute
 
-If you want to contribute with a pull request, please do so by submitting it to the dev branch.
+Pull requests are welcome in the main branch.
 
 
 
