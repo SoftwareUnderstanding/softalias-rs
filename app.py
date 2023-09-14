@@ -418,7 +418,7 @@ def main():
     col_about.markdown("Version: 0.0.1")
     col_about.markdown("Last revision: September, 2023")
     col_about.markdown("Github: <https://github.com/SoftwareUnderstanding/softalias-rs>")
-    col_about.markdown("Build with [streamlit](https://streamlit.io/)")
+    col_about.markdown("Built with [streamlit](https://streamlit.io/)")
 
     logo_oeg, logo_upm = col_figures.columns(2)
     
