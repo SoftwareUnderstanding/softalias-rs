@@ -1,0 +1,37 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: softalias-rs
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Daniel
+    family-names: Garijo
+    affiliation: Universidad Politécnica de Madrid
+    orcid: 'https://orcid.org/0000-0003-0454-7145'
+  - given-names: Hector
+    family-names: López
+    affiliation: Universidad Politécnica de Madrid
+  - given-names: 'Esteban '
+    family-names: González
+    affiliation: Universidad Politécnica de Madrid
+    orcid: 'https://orcid.org/0000-0003-4112-6825'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.8338240
+repository-code: 'https://github.com/SoftwareUnderstanding/softalias-rs'
+url: 'https://w3id.org/softalias/demo'
+abstract: >-
+  Softalias-rs is a service that uses Softalias-KG as a
+  reconciliation service for similar tool mentions, which we
+  have integrated with the Named Entity Recognition (NER)
+  model Softcite trained in the biomedical domain to extract
+  software mentions.
+keywords:
+  - software extraction
+  - knowledge graph
+  - demo
+license: MIT
