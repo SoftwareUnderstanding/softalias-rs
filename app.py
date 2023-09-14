@@ -418,12 +418,20 @@ def main():
     col_about.markdown("Version: 0.0.1")
     col_about.markdown("Last revision: September, 2023")
     col_about.markdown("Github: <https://github.com/SoftwareUnderstanding/softalias-rs>")
+    col_about.markdown("Build with [streamlit](https://streamlit.io/)")
 
     logo_oeg, logo_upm = col_figures.columns(2)
     
     logo_oeg.image("images/logo-oeg.gif", width=100)
     logo_upm.image("images/upmlogo.png", width=100)
-    #col_figures.markdown("![Logo upm](images/logo-oeg.gif)")
+    hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+
 if __name__ == '__main__':
     main()
 
