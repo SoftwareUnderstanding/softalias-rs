@@ -414,7 +414,7 @@ def main():
 
     st.markdown("---")
     col_about, col_figures = st.columns([2,1])
-    col_about.markdown("Daniel Garijo,Hector Lopez and Esteban Gonzalez")
+    col_about.markdown("Daniel Garijo, Hector Lopez and Esteban Gonzalez")
     col_about.markdown("Version: 0.0.1")
     col_about.markdown("Last revision: September, 2023")
     col_about.markdown("Github: <https://github.com/SoftwareUnderstanding/softalias-rs>")
